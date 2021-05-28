@@ -14,6 +14,8 @@ import argparse
 import yaml 
 import os 
 import random
+import wave
+import contextlib
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -33,7 +35,6 @@ samplingFrequency, signalData = wavfile.read(sound)
 # Plot the signal read from wav file
 plot.subplot(211)
 plot.title('Recorded Sound')
-
 plot.plot(signalData)
 plot.xlabel('Sample')
 plot.ylabel('Amplitude')
@@ -43,7 +44,14 @@ plot.title('Spectrogram')
 plot.specgram(signalData,Fs=samplingFrequency)
 plot.xlabel('Time (sec)')
 plot.ylabel('Frequency (Hz)')
-
 plot.show()
+
 playsound(sound)
+
+with contextlib.closing(wave.open(sound,'r')) as f:
+    frames = f.getnframes()
+    rate = f.getframerate()
+    duration = frames / float(rate)
+    print('Duration of sound:')
+    print(duration)
 
