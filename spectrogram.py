@@ -35,14 +35,14 @@ plot.subplot(211)
 plot.title('Recorded Sound')
 
 plot.plot(signalData)
-#plot.xlabel('Sample')
+plot.xlabel('Sample')
 plot.ylabel('Amplitude')
 
 plot.subplot(212)
 plot.title('Spectrogram')
 plot.specgram(signalData,Fs=samplingFrequency)
-plot.xlabel('Time')
-plot.ylabel('Frequency')
+plot.xlabel('Time (sec)')
+plot.ylabel('Frequency (Hz)')
 
 plot.show()
 playsound(sound)
