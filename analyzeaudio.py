@@ -5,6 +5,10 @@ Created on Wed Jun  2 00:38:59 2021
 
 @author: amandabreton
 """
+# I keep getting this error: 
+# ValueError: File format b'\x00\x00\x00\x01' not understood. Only 'RIFF' and 'RIFX' supported.
+# but if i just keep trying to run it, it's fine 
+
 # help from here: 
 # http://myinspirationinformation.com/uncategorized/audio-signals-in-python/
 #import libraries
@@ -54,6 +58,7 @@ Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
+plt.title('Spectrogram')
 cbar.set_label('Intensity dB')
 
 # this doesn't work: 
@@ -61,8 +66,31 @@ cbar.set_label('Intensity dB')
 #MHZ10=Pxx[where,:]
 #plt.plot(bins, MHZ10, color='#ff7f00')
 #plt.show()
+# need to employ a counter for the freqs i think
+# or some sort of histogram
 
-#%% New stuff 
+#%% 
+# psuedocode
+# need to split the time frame up: 
+#    
+t0 = int(input("Enter start time "))
+tf = int(input("Enter end time "))
+segment = audData[t0:tf]
+plt.figure(2, figsize=(8,6))
+Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
+cbar=plt.colorbar(im)
+plt.xlabel('Time (s)')
+plt.ylabel('Frequency (Hz)')
+plt.title('Spectrogram of Segmented Time')
+cbar.set_label('Intensity dB')
+plt.figure(2, figsize=(8,6))
+plt.hist(freqs)
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Counts')
+plt.title('Histogram')
+
+
+#%% New stuff on Fourier Transform 
 from scipy import fftpack as scfft
 from scipy.fft import fft, ifft
 from scipy.io.wavfile import write ,read
@@ -89,9 +117,10 @@ audible=np.where(volume>5)
 HighestAudibleFrequency=max(freqs_side[audible])
 print('Highest Audible Frequency = ' + str(HighestAudibleFrequency) + 'Hz')
 
-plt.figure(2, figsize=(8,6))
+plt.figure(3, figsize=(8,6))
 plt.plot(FFT)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power')
+plt.title('Fast Fourier Transform')
 
 #next step: getting a histogram of all the frequency values
