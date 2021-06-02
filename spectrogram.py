@@ -16,22 +16,27 @@ import os
 import random
 import wave
 import contextlib
+from scipy.fft import fft, ifft, fftfreq
+# learning stuff from here: 
+# https://makersportal.com/blog/2018/9/13/audio-processing-in-python-part-i-sampling-and-the-fast-fourier-transform
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument('config_filename')
-#args = parser.parse_args()
-#CONFIG_FILE = args.config_filename
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
 
-#with open(CONFIG_FILE) as f:
-#    configs = yaml.load(f, Loader=yaml.SafeLoader)
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
     
-#path = configs['path']
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+path = configs['path']
+#path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 
 # Read the wav file (mono)
 samplingFrequency, signalData = wavfile.read(sound)
+wavdata = wave.open(sound, 'r')
+print ( "parameters:",wavdata.getparams())
 
 # Plot the signal read from wav file
 plot.subplot(211)
@@ -47,7 +52,7 @@ plot.xlabel('Time (sec)')
 plot.ylabel('Frequency (Hz)')
 plot.show()
 
-playsound(sound)
+#playsound(sound)
 
 with contextlib.closing(wave.open(sound,'r')) as f:
     frames = f.getnframes()
@@ -56,3 +61,4 @@ with contextlib.closing(wave.open(sound,'r')) as f:
     print('Duration of sound:')
     print(duration)
 
+#yf = fft(signalData)
