@@ -49,7 +49,7 @@ power = 1.0/(2*(audData.size)+1)*np.sum(audData.astype(float)**2)/fs
 #plt.xlabel('Frequency (kHz)')
 #plt.ylabel('Power (dB)')
 
-plt.figure(2, figsize=(8,6))
+plt.figure(1, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
 plt.xlabel('Time (s)')
@@ -88,3 +88,10 @@ audible=np.where(volume>5)
 
 HighestAudibleFrequency=max(freqs_side[audible])
 print('Highest Audible Frequency = ' + str(HighestAudibleFrequency) + 'Hz')
+
+plt.figure(2, figsize=(8,6))
+plt.plot(FFT)
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Power')
+
+#next step: getting a histogram of all the frequency values
