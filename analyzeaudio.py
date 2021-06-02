@@ -8,9 +8,8 @@ Created on Wed Jun  2 00:38:59 2021
 # I keep getting this error: 
 # ValueError: File format b'\x00\x00\x00\x01' not understood. Only 'RIFF' and 'RIFX' supported.
 # but if i just keep trying to run it, it's fine 
+# it doesn't seem to work when run from the terminal though
 
-# help from here: 
-# http://myinspirationinformation.com/uncategorized/audio-signals-in-python/
 #import libraries
 import urllib
 import scipy.io.wavfile
@@ -20,8 +19,20 @@ import random
 import numpy as np
 from numpy import fft as fft
 import matplotlib.pyplot as plt
+import argparse 
+import yaml 
 
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+    
+path = configs['path']
 path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 
