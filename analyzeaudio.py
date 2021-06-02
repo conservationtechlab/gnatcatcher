@@ -21,13 +21,13 @@ path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 
-rate,audData=scipy.io.wavfile.read(sound)
-print('sampling rate = '), print(rate)
+fs,audData=scipy.io.wavfile.read(sound)
+print('sampling rate = ' +str(fs) + 'Hz')
 #print('audio wave data = '),print(audData)
-audlength = audData.shape[0]/rate
+audlength = audData.shape[0]/fs
 
 #power - energy per unit of time
-power = 1.0/(2*(audData.size)+1)*np.sum(audData.astype(float)**2)/rate
+power = 1.0/(2*(audData.size)+1)*np.sum(audData.astype(float)**2)/fs
 
 #fourier=fft.fft(audData)
 #plt.plot(fourier, color='#ff7f00')
@@ -50,7 +50,7 @@ power = 1.0/(2*(audData.size)+1)*np.sum(audData.astype(float)**2)/rate
 #plt.ylabel('Power (dB)')
 
 plt.figure(2, figsize=(8,6))
-Pxx, freqs, bins, im = plt.specgram(audData, Fs=rate, NFFT=1024)
+Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
@@ -62,4 +62,29 @@ cbar.set_label('Intensity dB')
 #plt.plot(bins, MHZ10, color='#ff7f00')
 #plt.show()
 
-#it's 1:09am so I'm going to stop for now and continue in the morning 
+#%% New stuff 
+from scipy import fftpack as scfft
+from scipy.fft import fft, ifft
+from scipy.io.wavfile import write ,read
+
+fs, audData  = read(sound)
+l_audio = len(audData.shape)
+N = audData.shape[0]
+secs = N / float(fs)
+Ts = 1.0/fs
+#t = scipy.arange(0, secs, Ts) 
+# "scipy.arange is deprecated and will be removed in SciPy 2.0.0, use numpy.arange instead"
+t = np.arange(0, secs, Ts) 
+#FFT = abs(scipy.fft(audData))
+FFT = abs(fft(audData))
+FFT_side = FFT[range(N//2)] 
+freqs = scipy.fftpack.fftfreq(audData.size, t[1]-t[0])
+fft_freqs = np.array(freqs)
+freqs_side = freqs[range(N//2)] 
+fft_freqs_side = np.array(freqs_side)
+
+volume=np.array(abs(FFT_side))
+audible=np.where(volume>5)
+
+HighestAudibleFrequency=max(freqs_side[audible])
+print('Highest Audible Frequency = ' + str(HighestAudibleFrequency) + 'Hz')
