@@ -23,6 +23,10 @@ import argparse
 import yaml 
 import wave
 import contextlib
+from scipy import fftpack as scfft
+from scipy.fft import fft, ifft
+from scipy.io.wavfile import write ,read
+import seaborn as sns
 
 #parser = argparse.ArgumentParser()
 #parser.add_argument('config_filename')
@@ -40,95 +44,25 @@ sound = os.path.join(path, random.choice(files))
 
 fs,audData=scipy.io.wavfile.read(sound)
 print('sampling rate = ' +str(fs) + 'Hz')
-#print('audio wave data = '),print(audData)
 audlength = audData.shape[0]/fs
-
 #power - energy per unit of time
 power = 1.0/(2*(audData.size)+1)*np.sum(audData.astype(float)**2)/fs
-
-#fourier=fft.fft(audData)
-#plt.plot(fourier, color='#ff7f00')
-#plt.xlabel('k')
-#plt.ylabel('Amplitude')
-# this also gives us the imaginary stuff which we don't 
-# really want to see right now 
-#n = len(audData)
-#fourier = fourier[0:(n/2)]
-# getting error below so going to ignore this for now 
-#^ TypeError: slice indices must be integers or None or have an __index__ method
-# scale by the number of points so that the magnitude does not depend on the length
-#fourier = fourier/float(n)
-
-#calculate the frequency at each point in Hz
-#freqArray = np.arange(0, (n/2), 1.0) * (rate*1.0/n);
-
-#plt.plot(freqArray/1000, 10*np.log10(fourier), color='#ff7f00', linewidth=0.02)
-#plt.xlabel('Frequency (kHz)')
-#plt.ylabel('Power (dB)')
 
 plt.figure(1, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
-plt.title('Spectrogram')
+plt.title('Spectrogram of Entire Audio')
 cbar.set_label('Intensity dB')
 
-# this doesn't work: 
-#where  = np.where(freqs==2000)
-#MHZ10=Pxx[where,:]
-#plt.plot(bins, MHZ10, color='#ff7f00')
-#plt.show()
-# need to employ a counter for the freqs i think
-# or some sort of histogram
-
-#%% 
-
-with contextlib.closing(wave.open(sound,'r')) as f:
-    frames = f.getnframes()
-    rate = f.getframerate()
-    duration = frames / float(rate)
-    print('Duration of sound:')
-    print(duration)
-    
-# psuedocode
-# need to split the time frame up: 
-#    
-t0 = int(input("Enter start time "))
-tf = int(input("Enter end time "))
-f0 = t0*rate
-ff = tf*rate
-#right now t0 and tf are indexes of the array
-# need to have it correspond to time instead 
-segment = audData[t0:ff]
-plt.figure(2, figsize=(8,6))
-Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
-cbar=plt.colorbar(im)
-plt.xlabel('Time (s)')
-plt.ylabel('Frequency (Hz)')
-plt.title('Spectrogram of Segmented Time')
-cbar.set_label('Intensity dB')
-plt.figure(3, figsize=(8,6))
-plt.hist(freqs)
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Counts')
-plt.title('Histogram')
-
-
-#%% New stuff on Fourier Transform 
-from scipy import fftpack as scfft
-from scipy.fft import fft, ifft
-from scipy.io.wavfile import write ,read
-
+#Fourier Transform 
 fs, audData  = read(sound)
 l_audio = len(audData.shape)
 N = audData.shape[0]
 secs = N / float(fs)
 Ts = 1.0/fs
-#t = scipy.arange(0, secs, Ts) 
-# "scipy.arange is deprecated and will be removed in SciPy 2.0.0, use numpy.arange instead"
 t = np.arange(0, secs, Ts) 
-#FFT = abs(scipy.fft(audData))
 FFT = abs(fft(audData))
 FFT_side = FFT[range(N//2)] 
 freqs = scipy.fftpack.fftfreq(audData.size, t[1]-t[0])
@@ -138,14 +72,47 @@ fft_freqs_side = np.array(freqs_side)
 
 volume=np.array(abs(FFT_side))
 audible=np.where(volume>5)
-
 HighestAudibleFrequency=max(freqs_side[audible])
 print('Highest Audible Frequency = ' + str(HighestAudibleFrequency) + 'Hz')
 
-plt.figure(3, figsize=(8,6))
+plt.figure(2, figsize=(8,6))
 plt.plot(FFT)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Power')
-plt.title('Fast Fourier Transform')
+plt.title('Fast Fourier Transform of Entire Audio')
 
-#next step: getting a histogram of all the frequency values
+with contextlib.closing(wave.open(sound,'r')) as f:
+    frames = f.getnframes()
+    rate = f.getframerate()
+    duration = frames / float(rate)
+    print('Duration of sound:')
+    print(duration)
+
+# choosing a specific part to analyze    
+t0 = int(input("Enter start time "))
+tf = int(input("Enter end time "))
+f0 = t0*rate
+ff = tf*rate
+
+segment = audData[t0:ff]
+plt.figure(3, figsize=(8,6))
+Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
+cbar=plt.colorbar(im)
+plt.xlabel('Time (s)')
+plt.ylabel('Frequency (Hz)')
+plt.title('Spectrogram of Segmented Time')
+cbar.set_label('Intensity dB')
+
+# Density Plot and Histogram 
+y, x, _ = plt.hist(audData)
+mostfreq = max(y)
+print('the most prominent frequency is: ' + str(mostfreq) + 'Hz')
+plt.close()
+
+plt.figure(4, figsize=(8,6))
+sns.distplot(audData, hist=True, kde=True, 
+             bins=int(180/5), color = 'darkblue', 
+             hist_kws={'edgecolor':'black'},
+             kde_kws={'linewidth': 4})
+
+
