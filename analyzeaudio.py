@@ -103,16 +103,15 @@ plt.ylabel('Frequency (Hz)')
 plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
 
+
 # Density Plot and Histogram 
-y, x, _ = plt.hist(audData)
-mostfreq = max(y)
-print('the most prominent frequency is: ' + str(mostfreq) + 'Hz')
-plt.close()
-
 plt.figure(4, figsize=(8,6))
-sns.distplot(audData, hist=True, kde=True, 
-             bins=int(180/5), color = 'darkblue', 
-             hist_kws={'edgecolor':'black'},
-             kde_kws={'linewidth': 4})
+y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
+         bins = int(180/5))
 
-
+plt.hist(segment, color = 'blue', edgecolor = 'black',
+         bins = int(180/5))
+plt.show()
+mostfreq = max(y)
+print('The most prominent frequency for the time frame is: ' + str(mostfreq) + 'Hz')
+plt.close()
