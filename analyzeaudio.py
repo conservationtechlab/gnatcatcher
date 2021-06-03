@@ -21,16 +21,18 @@ from numpy import fft as fft
 import matplotlib.pyplot as plt
 import argparse 
 import yaml 
+import wave
+import contextlib
 
-parser = argparse.ArgumentParser()
-parser.add_argument('config_filename')
-args = parser.parse_args()
-CONFIG_FILE = args.config_filename
+#parser = argparse.ArgumentParser()
+#parser.add_argument('config_filename')
+#args = parser.parse_args()
+#CONFIG_FILE = args.config_filename
 
-with open(CONFIG_FILE) as f:
-    configs = yaml.load(f, Loader=yaml.SafeLoader)
+#with open(CONFIG_FILE) as f:
+#    configs = yaml.load(f, Loader=yaml.SafeLoader)
     
-path = configs['path']
+#path = configs['path']
 path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 
 files = os.listdir(path)
@@ -81,12 +83,24 @@ cbar.set_label('Intensity dB')
 # or some sort of histogram
 
 #%% 
+
+with contextlib.closing(wave.open(sound,'r')) as f:
+    frames = f.getnframes()
+    rate = f.getframerate()
+    duration = frames / float(rate)
+    print('Duration of sound:')
+    print(duration)
+    
 # psuedocode
 # need to split the time frame up: 
 #    
 t0 = int(input("Enter start time "))
 tf = int(input("Enter end time "))
-segment = audData[t0:tf]
+f0 = t0*rate
+ff = tf*rate
+#right now t0 and tf are indexes of the array
+# need to have it correspond to time instead 
+segment = audData[t0:ff]
 plt.figure(2, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
@@ -94,7 +108,7 @@ plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
 plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
-plt.figure(2, figsize=(8,6))
+plt.figure(3, figsize=(8,6))
 plt.hist(freqs)
 plt.xlabel('Frequency (Hz)')
 plt.ylabel('Counts')
