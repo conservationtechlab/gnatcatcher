@@ -94,7 +94,8 @@ tf = int(input("Enter end time "))
 f0 = t0*rate
 ff = tf*rate
 
-segment = audData[t0:ff]
+#segment = audData[t0:ff]
+segment = FFT[t0:ff]
 plt.figure(3, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
@@ -111,7 +112,13 @@ y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
 
 plt.hist(segment, color = 'blue', edgecolor = 'black',
          bins = int(180/5))
-plt.show()
+#plt.xlabel('Frequency (Hz)')
+#plt.ylabel('Histogram of Time Frame')
+#plt.title('Count')
+#plt.show()
 mostfreq = max(y)
-print('The most prominent frequency for the time frame is: ' + str(mostfreq) + 'Hz')
-plt.close()
+bin_max = np.where(y == max(y))
+print('maxbin', x[bin_max][0])
+
+#print('The most prominent frequency for the time frame is: ' + str(mostfreq) + 'Hz')
+# not really sure what these correspond to though 
