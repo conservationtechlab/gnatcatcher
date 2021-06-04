@@ -95,7 +95,7 @@ f0 = t0*rate
 ff = tf*rate
 
 #segment = audData[t0:ff]
-segment = FFT[t0:ff]
+segment = FFT[f0:ff]
 plt.figure(3, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
 cbar=plt.colorbar(im)
@@ -103,7 +103,6 @@ plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
 plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
-
 
 mostintense = np.argmax(segment)
 print('The most intense frequency = ' + str(mostintense) + ' Hz')
