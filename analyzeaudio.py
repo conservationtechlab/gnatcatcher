@@ -105,17 +105,19 @@ plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
 
 
-# Density Plot and Histogram 
+# Histogram 
 plt.figure(4, figsize=(8,6))
+#y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
+#         bins = int(180/5))
 y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
          bins = int(180/5))
 
 plt.hist(segment, color = 'blue', edgecolor = 'black',
          bins = int(180/5))
-#plt.xlabel('Frequency (Hz)')
-#plt.ylabel('Histogram of Time Frame')
-#plt.title('Count')
-#plt.show()
+plt.xlabel('Frequency (Hz)')
+plt.ylabel('Histogram of Time Frame')
+plt.title('Count')
+plt.show()
 mostfreq = max(y)
 bin_max = np.where(y == max(y))
 print('maxbin', x[bin_max][0])
