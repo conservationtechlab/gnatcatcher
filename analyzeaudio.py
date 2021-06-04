@@ -105,22 +105,5 @@ plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
 
 
-# Histogram 
-plt.figure(4, figsize=(8,6))
-#y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
-#         bins = int(180/5))
-y, x, _ = plt.hist(segment, color = 'blue', edgecolor = 'black',
-         bins = int(180/5))
-
-plt.hist(segment, color = 'blue', edgecolor = 'black',
-         bins = int(180/5))
-plt.xlabel('Frequency (Hz)')
-plt.ylabel('Histogram of Time Frame')
-plt.title('Count')
-plt.show()
-mostfreq = max(y)
-bin_max = np.where(y == max(y))
-print('maxbin', x[bin_max][0])
-
-#print('The most prominent frequency for the time frame is: ' + str(mostfreq) + 'Hz')
-# not really sure what these correspond to though 
+mostintense = np.argmax(segment)
+print('The most intense frequency = ' + str(mostintense) + ' Hz')
