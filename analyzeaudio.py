@@ -30,16 +30,16 @@ from scipy.io.wavfile import write ,read
 import pandas
 #import seaborn as sns
 
-parser = argparse.ArgumentParser()
-parser.add_argument('config_filename')
-args = parser.parse_args()
-CONFIG_FILE = args.config_filename
+#parser = argparse.ArgumentParser()
+#parser.add_argument('config_filename')
+#args = parser.parse_args()
+#CONFIG_FILE = args.config_filename
 
-with open(CONFIG_FILE) as f:
-    configs = yaml.load(f, Loader=yaml.SafeLoader)
+#with open(CONFIG_FILE) as f:
+#    configs = yaml.load(f, Loader=yaml.SafeLoader)
     
-path = configs['path']
-#path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+#path = configs['path']
+path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
@@ -132,19 +132,25 @@ plt.title('Spectrogram of Entire Audio')
 cbar.set_label('Intensity dB')
 
 rows, cols = Pxx.shape
+maxpower = []
 maxfreqs = []
 for i in range(cols):
+    power = np.max(Pxx[:,i])
+    maxpower.append(power)
     val = np.argmax(Pxx[:,i])
     maxfreqs.append(val)
-
-# it's giving the index number right now not the actual frequency value
-# need to go in and correspond each index with it's frequency 
+ 
 plt.figure(5, figsize=(8,6))
+plt.subplot(211)
 plt.plot(maxfreqs)  
 plt.xlabel('bin number')
 plt.ylabel('Frequency (Hz)')
 plt.title('Strongest Frequency per bin')
-
+plt.subplot(212)
+plt.plot(maxpower)  
+plt.xlabel('bin number')
+plt.ylabel('Power')
+plt.title('Power of Strongest Frequency per Bin')
 # need to figure it out per time frame rather than bin 
 # the whale sound data is not a great example because it's FFT is so weird
 # it thinks the strongest freqency is 
