@@ -134,9 +134,11 @@ cbar.set_label('Intensity dB')
 rows, cols = Pxx.shape
 maxfreqs = []
 for i in range(cols):
-    val = np.max(Pxx[:,i])
+    val = np.argmax(Pxx[:,i])
     maxfreqs.append(val)
 
+# it's giving the index number right now not the actual frequency value
+# need to go in and correspond each index with it's frequency 
 plt.figure(5, figsize=(8,6))
 plt.plot(maxfreqs)  
 plt.xlabel('bin number')
@@ -144,3 +146,5 @@ plt.ylabel('Frequency (Hz)')
 plt.title('Strongest Frequency per bin')
 
 # need to figure it out per time frame rather than bin 
+# the whale sound data is not a great example because it's FFT is so weird
+# it thinks the strongest freqency is 
