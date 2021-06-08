@@ -19,9 +19,7 @@ Created on Wed Jun  2 00:38:59 2021
 # it doesn't seem to work when run from the terminal though
 
 #import libraries
-import urllib
 import scipy.io.wavfile
-import pydub
 import os 
 import random 
 import numpy as np
@@ -35,7 +33,6 @@ from scipy import fftpack as scfft
 from scipy.fft import fft, ifft
 # i do need this scipy.fft abs(fft(audData)) uses it 
 from scipy.io.wavfile import write ,read
-import pandas
 #import seaborn as sns
 
 parser = argparse.ArgumentParser()
@@ -79,7 +76,6 @@ with contextlib.closing(wave.open(sound,'r')) as f:
     print('Duration of sound:')
     print(duration)
 
-
 #%% finding loudest part of the sound file 
 
 avgpower = []
@@ -89,3 +85,6 @@ for i in range(len(bins)):
     power = np.mean(tempPxx)
     avgpower.append(power)
     
+#as of now this doesn't break it up into the chunks i want 
+# but after this i think i can convert the power to decibels 
+# so it's easier to see how the average loudness changes over time
