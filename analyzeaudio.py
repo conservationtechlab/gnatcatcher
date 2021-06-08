@@ -119,4 +119,26 @@ if intensF == 0.0:
     row, col = np.where(Pxx == np.max(Pxx))
     intensF = freqsnew[row][0]
     
-print('The most prominent frequency = ' + str(intensF) + ' Hz')    
+print('The most prominent frequency = ' + str(intensF) + ' Hz')
+
+#%% plotting the strongest frequencies over the time frame 
+    
+plt.figure(4, figsize=(8,6))
+Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
+cbar=plt.colorbar(im)
+plt.xlabel('Time (s)')
+plt.ylabel('Frequency (Hz)')
+plt.title('Spectrogram of Entire Audio')
+cbar.set_label('Intensity dB')
+
+rows, cols = Pxx.shape
+maxfreqs = []
+for i in range(cols):
+    val = np.max(Pxx[:,i])
+    maxfreqs.append(val)
+
+plt.figure(5, figsize=(8,6))
+plt.plot(maxfreqs)  
+plt.xlabel('bin number')
+plt.ylabel('Frequency (Hz)')
+plt.title('Strongest Frequency per bin')
