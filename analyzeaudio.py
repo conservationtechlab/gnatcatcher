@@ -142,3 +142,5 @@ plt.plot(maxfreqs)
 plt.xlabel('bin number')
 plt.ylabel('Frequency (Hz)')
 plt.title('Strongest Frequency per bin')
+
+# need to figure it out per time frame rather than bin 
