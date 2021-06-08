@@ -27,6 +27,7 @@ from scipy import fftpack as scfft
 from scipy.fft import fft, ifft
 # i do need this scipy.fft abs(fft(audData)) uses it 
 from scipy.io.wavfile import write ,read
+import pandas
 #import seaborn as sns
 
 #parser = argparse.ArgumentParser()
@@ -95,15 +96,27 @@ tf = int(input("Enter end time "))
 f0 = t0*rate
 ff = tf*rate
 
-#segment = audData[t0:ff]
-segment = FFT[f0:ff]
+segment = audData[f0:ff]
 plt.figure(3, figsize=(8,6))
 Pxx, freqs, bins, im = plt.specgram(segment, Fs=fs, NFFT=1024)
+# The `specgram` method returns 4 objects. They are:
+# - Pxx: the periodogram
+# - freqs: the frequency vector
+# - bins: the centers of the time bins
+# - im: the .image.AxesImage instance representing the data in the plot
 cbar=plt.colorbar(im)
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
 plt.title('Spectrogram of Segmented Time')
 cbar.set_label('Intensity dB')
 
-mostintense = np.argmax(segment)
-print('The most intense frequency = ' + str(mostintense) + ' Hz')
+row, col = np.where(Pxx == np.max(Pxx))
+intensF = freqs[row][0]
+
+if intensF == 0.0:
+    Pxxnew = np.delete(Pxx, (0), axis=0)
+    freqsnew = np.delete(freqs, (0), axis=0)
+    row, col = np.where(Pxx == np.max(Pxx))
+    intensF = freqsnew[row][0]
+    
+print('The most prominent frequency = ' + str(intensF) + ' Hz')    
