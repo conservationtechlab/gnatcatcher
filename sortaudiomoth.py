@@ -7,13 +7,17 @@ Created on Tue Jun 15 09:13:31 2021
 """
 import os 
 import random 
+import csv
+import pandas
+import wave
 
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-files = os.listdir(path)
-sound = os.path.join(path, random.choice(files))
+csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
 
 #%% doesn't work 
 # https://pypi.org/project/wavinfo/ 
+path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+files = os.listdir(path)
+sound = os.path.join(path, random.choice(files))
 
 from wavinfo import WavInfoReader
 info = WavInfoReader(sound)
@@ -25,25 +29,14 @@ audio = mutagen.File(sound)
 audio.pprint()
 
 
-#%% building up to bigger things 
-import wave
-#import numpy as np
-
-file = wave.open(sound)
-nchannels = file.getnchannels()
-framerate = file.getframerate()
-nframes = file.getnframes()
-
-#%% 
-import csv
-import pandas
-csvpath = "/Users/amandabreton/Documents/GitHub/brushdash/"
+#%% extracting data in a simpler but longer way 
 
 if os.path.exists(os.path.join(csvpath, "audiocsv.csv")):
   os.remove(os.path.join(csvpath, "audiocsv.csv"))
 else:
-  print("no audiocsv.csv file")
-  
+  #print("no audiocsv.csv file")
+  pass
+
 nonimagecount = 0
 if os.path.exists(os.path.join(path, ".DS_Store")):
   os.remove(os.path.join(path, ".DS_Store"))
@@ -64,22 +57,29 @@ sounds = [os.path.join(path, name) for name in os.listdir(path) if
 length = len(sounds)
 entrynum = list(range(0, length))
     
-animals = ["bird", "dog", "cat", "lizard"]
-classification = []
+channelarray = []
+samplerates = []
+framenums = []
 for k in range(length):
-    fill = random.choice(animals)
-    classification.append(fill)
-
-#%%
+    sample = sounds[k]
+    file = wave.open(sample)
+    nchannel = file.getnchannels()
+    channelarray.append(nchannel)
+    fs = file.getframerate()
+    samplerates.append(fs)
+    frames = file.getnframes()
+    framenums.append(frames)
+    
 f = open(os.path.join(csvpath, 'audiocsv.csv'), "a", newline = "")
 writer = csv.writer(f)
 writer.writerow(entrynum)
 writer.writerow(sounds)
+writer.writerow(channelarray)
+writer.writerow(samplerates)
+writer.writerow(framenums)
 f.close()
 
-data = pandas.read_csv(os.path.join(csvpath, 'imagecsv.csv'))
-#print(data.describe())
+data = pandas.read_csv(os.path.join(csvpath, 'audiocsv.csv'))
 data = data.transpose()
-data.rename(columns={0: 'AudioPath', 1: 'Class'}, inplace=True)
-data.to_csv(os.path.join(csvpath, 'imagecsv.csv'), index=False)
-#data.ImagePath[2]
+data.rename(columns={0: 'AudioPath', 1: 'Channels', 2: 'Sample Rate (Hz)', 3: 'Number of Frames'}, inplace=True)
+data.to_csv(os.path.join(csvpath, 'audiocsv.csv'), index=False)
