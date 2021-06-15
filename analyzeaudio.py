@@ -11,9 +11,9 @@ Created on Wed Jun  2 00:38:59 2021
 # it doesn't seem to work when run from the terminal though
 
 #import libraries
-import urllib
+#import urllib
 import scipy.io.wavfile
-import pydub
+#import pydub
 import os 
 import random 
 import numpy as np
@@ -26,19 +26,17 @@ import contextlib
 from scipy import fftpack as scfft
 from scipy.fft import fft, ifft
 # i do need this scipy.fft abs(fft(audData)) uses it 
-from scipy.io.wavfile import write ,read
-import pandas
-#import seaborn as sns
+from scipy.io.wavfile import write,read
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument('config_filename')
-#args = parser.parse_args()
-#CONFIG_FILE = args.config_filename
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+ONFIG_FILE = args.config_filename
 
-#with open(CONFIG_FILE) as f:
-#    configs = yaml.load(f, Loader=yaml.SafeLoader)
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
     
-#path = configs['path']
+path = configs['path']
 path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 
 files = os.listdir(path)
@@ -134,12 +132,16 @@ cbar.set_label('Intensity dB')
 rows, cols = Pxx.shape
 maxpower = []
 maxfreqs = []
-for i in range(cols):
+
+x = cols
+y = x/48
+y = round(y)
+for i in range(0,cols,y):
     power = np.max(Pxx[:,i])
     maxpower.append(power)
     val = np.argmax(Pxx[:,i])
     maxfreqs.append(val)
- 
+    
 plt.figure(5, figsize=(8,6))
 plt.subplot(211)
 plt.plot(maxfreqs)  
