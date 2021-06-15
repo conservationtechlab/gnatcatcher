@@ -31,7 +31,7 @@ from scipy.io.wavfile import write,read
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
 args = parser.parse_args()
-ONFIG_FILE = args.config_filename
+CONFIG_FILE = args.config_filename
 
 with open(CONFIG_FILE) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
