@@ -10,24 +10,17 @@ import random
 import csv
 import pandas
 import wave
+import matplotlib.pyplot as plt
+import scipy
+from scipy.io.wavfile import write,read
+import contextlib
+import numpy as np 
+import math 
 
 csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
-
-#%% doesn't work 
-# https://pypi.org/project/wavinfo/ 
 path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
-
-from wavinfo import WavInfoReader
-info = WavInfoReader(sound)
-#AttributeError: 'ListChunkDescriptor' object has no attribute 'ident'
-#%% doesn't work 
-# https://mutagen.readthedocs.io/en/latest/api/wave.html
-import mutagen
-audio = mutagen.File(sound)
-audio.pprint()
-
 
 #%% extracting data in a simpler but longer way 
 
@@ -60,6 +53,12 @@ entrynum = list(range(0, length))
 channelarray = []
 samplerates = []
 framenums = []
+durationarray= []
+IFarray = []
+loudness = []
+loudtime = []
+avgloudness = []
+
 for k in range(length):
     sample = sounds[k]
     file = wave.open(sample)
@@ -69,6 +68,28 @@ for k in range(length):
     samplerates.append(fs)
     frames = file.getnframes()
     framenums.append(frames)
+    fs,audData=scipy.io.wavfile.read(sample)
+    Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
+    with contextlib.closing(wave.open(sample,'r')) as f:
+        frames = f.getnframes()
+        rate = f.getframerate()
+        duration = frames / float(rate)
+    durationarray.append(duration)
+    row, col = np.where(Pxx == np.max(Pxx))
+    intensF = freqs[row][0]
+    if intensF == 0.0:
+        Pxxnew = np.delete(Pxx, (0), axis=0)
+        freqsnew = np.delete(freqs, (0), axis=0)
+        row, col = np.where(Pxx == np.max(Pxx))
+        intensF = freqsnew[row][0]
+    IFarray.append(intensF)   
+    dec = math.log(np.max(Pxx))  
+    #double check the math for calculating decibels 
+    loudness.append(dec)
+    x = ((col*duration)/len(bins))[0]
+    loudtime.append(x)
+    avgL = math.log(np.mean(Pxx))
+    avgloudness.append(avgL)
     
 f = open(os.path.join(csvpath, 'audiocsv.csv'), "a", newline = "")
 writer = csv.writer(f)
@@ -77,9 +98,14 @@ writer.writerow(sounds)
 writer.writerow(channelarray)
 writer.writerow(samplerates)
 writer.writerow(framenums)
+writer.writerow(durationarray)
+writer.writerow(IFarray)
+writer.writerow(loudness)
+writer.writerow(loudtime)
+writer.writerow(avgloudness)
 f.close()
 
 data = pandas.read_csv(os.path.join(csvpath, 'audiocsv.csv'))
 data = data.transpose()
-data.rename(columns={0: 'AudioPath', 1: 'Channels', 2: 'Sample Rate (Hz)', 3: 'Number of Frames'}, inplace=True)
+data.rename(columns={0: 'AudioPath', 1: 'Channels', 2: 'Sample Rate (Hz)', 3: 'Number of Frames', 4: 'Time (sec)', 5:'Most Prominent Frequency (MPF)', 6: 'Loudness of MPF (dB)', 7: 'Time of Loudest Freq', 8: 'Average Loudness (dB)'}, inplace=True)
 data.to_csv(os.path.join(csvpath, 'audiocsv.csv'), index=False)
