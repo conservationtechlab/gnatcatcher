@@ -2,8 +2,22 @@
 # -*- coding: utf-8 -*-
 """
 Created on Tue Jun 15 09:13:31 2021
-
 @author: amandabreton
+
+Provides a summary of the audio data in a given folder.
+
+Instructions:
+    1. Install PyExifTool using "pip install PyExifTool"
+    2. Provide a configfile that includes:
+        - the path to the folder containing the audio files
+        - the path where you want the csv file to be saved
+        Example of yaml file:
+            csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+            path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+    3. Run the code. It should provide a csv file containing:
+        Path of the audio file, # of channels, sample rate, # of frames ,
+        time (sec), most prominent frequency (mpf), loudness of mpf,
+        time of mpf, average loudness, any comments found in audio's metadata'
 """
 import os
 import random
