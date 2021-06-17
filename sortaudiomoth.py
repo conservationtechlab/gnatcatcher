@@ -15,14 +15,26 @@ import scipy
 import contextlib
 import numpy as np
 import math
+import argparse
+import yaml
 
-csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+path = configs['path']
+csvpath = configs['csvpath']
+
+# csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 
 # %%
 # extracting data in a simpler but longer way
+
 
 if os.path.exists(os.path.join(csvpath, "audiocsv.csv")):
     os.remove(os.path.join(csvpath, "audiocsv.csv"))
