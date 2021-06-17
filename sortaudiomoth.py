@@ -17,6 +17,8 @@ import numpy as np
 import math
 import argparse
 import yaml
+import exiftool
+import scipy.io.wavfile
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -70,6 +72,7 @@ IFarray = []
 loudness = []
 loudtime = []
 avgloudness = []
+comments = []
 
 for k in range(length):
     sample = sounds[k]
@@ -102,6 +105,9 @@ for k in range(length):
     loudtime.append(x)
     avgL = math.log(np.mean(Pxx))
     avgloudness.append(avgL)
+    with exiftool.ExifTool() as et:
+        audComment = et.get_tag("comment", sample)
+    comments.append(audComment)
 
 f = open(os.path.join(csvpath, 'audiocsv.csv'), "a", newline="")
 writer = csv.writer(f)
@@ -115,6 +121,7 @@ writer.writerow(IFarray)
 writer.writerow(loudness)
 writer.writerow(loudtime)
 writer.writerow(avgloudness)
+writer.writerow(comments)
 f.close()
 
 data = pandas.read_csv(os.path.join(csvpath, 'audiocsv.csv'))
@@ -123,5 +130,5 @@ data.rename(columns={0: 'AudioPath', 1: 'Channels',
                      2: 'Sample Rate (Hz)', 3: 'Number of Frames',
                      4: 'Time (sec)', 5: 'Most Prominent Frequency (MPF)',
                      6: 'Loudness of MPF (dB)', 7: 'Time of Loudest Freq',
-                     8: 'Average Loudness (dB)'}, inplace=True)
+                     8: 'Average Loudness (dB)', 9: 'Comments'}, inplace=True)
 data.to_csv(os.path.join(csvpath, 'audiocsv.csv'), index=False)
