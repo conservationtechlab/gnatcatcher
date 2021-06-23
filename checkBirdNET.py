@@ -5,15 +5,35 @@ Created on Tue Jun 22 16:19:38 2021
 
 @author: amandabreton
 """
+# %% import tools
 import pyaudio
-import numpy as np
 import wave
-import struct
 import pandas as pd
 import time
-audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV'
-datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet csv Files/5D31ED38.BirdNET.csv'
-threshold = 0.95
+import argparse
+import yaml
+
+# %% setup your files
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+audio = configs['audio']
+datafile = configs['datafile']
+threshold = configs['threshold']
+# audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV'
+# datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet csv Files/5D31ED38.BirdNET.csv'
+# threshold = 0.95
+
+# %% setting up a threshold in case one isn't provided
+checker = isinstance(threshold, float)
+if True:
+    threshold = threshold
+else:
+    threshold = 0.001
+
 # %%
 # setting up which sounds to hear
 
@@ -54,10 +74,11 @@ for i in range(len(knbirds)):
 
     # initialize audio
     py_audio = pyaudio.PyAudio()
-    stream = py_audio.open(format=py_audio.get_format_from_width(wave_file.getsampwidth()),
-                           channels=wave_file.getnchannels(),
-                           rate=wave_file.getframerate(),
-                           output=True)
+    stream = py_audio.open(
+        format=py_audio.get_format_from_width(wave_file.getsampwidth()),
+        channels=wave_file.getnchannels(),
+        rate=wave_file.getframerate(),
+        output=True)
 
     # skip unwanted frames
     n_frames = int(start * wave_file.getframerate())
@@ -72,5 +93,6 @@ for i in range(len(knbirds)):
     stream.close()
     py_audio.terminate()
     wave_file.close()
+    time.sleep(1)
 
 print('There were ' + str(len(knbirds)) + ' bird call guesses total')
