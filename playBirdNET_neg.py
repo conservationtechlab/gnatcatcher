@@ -12,7 +12,8 @@ import pandas as pd
 import os
 import contextlib
 import numpy as np
-
+import argparse
+import yaml
 
 def ranges(nums):
     nums = sorted(set(nums))
@@ -21,11 +22,20 @@ def ranges(nums):
     return list(zip(edges, edges))
 
 
-audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
-datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D3C4530.BirdNET.csv'
+# %% setup your files
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+audio = configs['audio']
+datafile = configs['datafile']
+# threshold = configs['threshold']
+# audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
+# datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D3C4530.BirdNET.csv'
 
 # %% getting duration
-
 with contextlib.closing(wave.open(audio, 'r')) as f:
     frames = f.getnframes()
     rate = f.getframerate()
