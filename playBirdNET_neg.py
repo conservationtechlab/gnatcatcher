@@ -12,6 +12,15 @@ import pandas as pd
 import os
 import contextlib
 import numpy as np
+
+
+def ranges(nums):
+    nums = sorted(set(nums))
+    gaps = [[s, e] for s, e in zip(nums, nums[1:]) if s+1 < e]
+    edges = iter(nums[:1] + sum(gaps, []) + nums[-1:])
+    return list(zip(edges, edges))
+
+
 audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
 datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D3C4530.BirdNET.csv'
 
@@ -22,7 +31,7 @@ with contextlib.closing(wave.open(audio, 'r')) as f:
     rate = f.getframerate()
     duration = frames / float(rate)
 
-timestep = np.arange(0,duration+1)
+timestep = np.arange(0, duration+1)
 
 # %% 
 df = pd.read_csv(
@@ -54,7 +63,7 @@ stored = []
 for i in range(len(knbirds)):
     boi = np.arange(int(starts[i]), int(ends[i]))
     stored.append(boi)
-    
+
 stored = np.transpose(stored)
 row, col = stored.shape
 
@@ -75,3 +84,53 @@ for i in range(len(timestep)):
     else:
         negs.append(val)
 negs = np.array(negs)
+
+
+# %%
+negsrange = ranges(negs)
+starts = []
+ends = []
+for i in range(len(negsrange)):
+    s = negsrange[i][0]
+    starts.append(s)
+    e = negsrange[i][1]
+    ends.append(e)
+
+# %%  hearing where there is supposedly no birds
+if (len(negsrange) == 1):
+    print('There are no silent times in this audio sample')
+else:
+    for i in range(len(starts)):
+        File = audio
+        print('There should be no bird calls here.')
+        print('The time is from ' + str(starts[i]) + ' sec to ' + str(ends[i]) +
+              ' sec')
+    # set desired values
+        start = int(starts[i])
+        stop = int(ends[i])
+        length = stop - start
+
+        # open wave file
+        wave_file = wave.open(audio, 'rb')
+
+        # initialize audio
+        py_audio = pyaudio.PyAudio()
+        stream = py_audio.open(
+            format=py_audio.get_format_from_width(wave_file.getsampwidth()),
+            channels=wave_file.getnchannels(),
+            rate=wave_file.getframerate(),
+            output=True)
+
+        # skip unwanted frames
+        n_frames = int(start * wave_file.getframerate())
+        wave_file.setpos(n_frames)
+
+        # write desired frames to audio buffer
+        n_frames = int(length * wave_file.getframerate())
+        frames = wave_file.readframes(n_frames)
+        stream.write(frames)
+
+        # close and terminate everything properly
+        stream.close()
+        py_audio.terminate()
+        wave_file.close()
