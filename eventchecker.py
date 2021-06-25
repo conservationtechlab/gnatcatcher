@@ -14,7 +14,7 @@ import contextlib
 import wave
 import os
 import pandas as pd
-sound = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
+
 # path where the soudns are hosted
 # path where you want the csv file saved
 csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
@@ -67,3 +67,21 @@ df = pd.DataFrame(list(zip(sounds, eventglobals, goodlocals)),
                   columns=['Audio_Paths', 'Highest_Event_Probability',
                            'Number_of_Events'])
 
+# %% work in progress - need to correctly parse in data
+# but here is some psuedo code
+# o = path where you want the BirdNET txt files saved
+# i think will need to be in the same folder
+# for i in range (len(df['Audio_Paths']))
+#   i = df['Audio_Paths'][i]
+#   import analyze.py //(from Birdnet)
+#print('Done analyzing audio files.')
+
+import sys
+o = csvpath
+birdnetpath = '/Users/amandabreton/Documents/GitHub/BirdNET'
+
+for i in range (len(df['Audio_Paths'])):
+    i = df['Audio_Paths'][i]
+    sys.path.insert(0, birdnetpath)
+    import analyze
+print('Done analyzing audio files.')
