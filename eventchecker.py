@@ -75,13 +75,31 @@ df = pd.DataFrame(list(zip(sounds, eventglobals, goodlocals)),
 #   i = df['Audio_Paths'][i]
 #   import analyze.py //(from Birdnet)
 #print('Done analyzing audio files.')
+#import sys
+#O = csvpath
+#
+#birdnetpath = '/Users/amandabreton/Documents/GitHub/BirdNET'
+#for i in range (len(df['Audio_Paths'])):
+#    I = df['Audio_Paths'][i]
+#    sys.path.insert(0, birdnetpath)
+#    import analyze
+#print('Done analyzing audio files.')
 
-import sys
-o = csvpath
-birdnetpath = '/Users/amandabreton/Documents/GitHub/BirdNET'
 
-for i in range (len(df['Audio_Paths'])):
-    i = df['Audio_Paths'][i]
-    sys.path.insert(0, birdnetpath)
-    import analyze
-print('Done analyzing audio files.')
+# %%
+import subprocess
+from subprocess import call
+import os
+# %%
+# subprocess.call(['python', 'somescript.py', somescript_arg1, somescript_val1,...])
+birdinput = df['Audio_Paths'][3]
+os.chdir("/Users/amandabreton/Documents/GitHub/BirdNET")
+subprocess.call(['python', '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py', '--i /Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/20190726_033400.WAV'])
+
+# %%
+#from subprocess import Popen, PIPE
+
+#p = Popen(['program', 'arg1'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+#os.chmod("/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py", 755)
+
+#Popen(['/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py', birdinput], stdin=PIPE, stdout=PIPE, stderr=PIPE)
