@@ -14,13 +14,31 @@ import contextlib
 import wave
 import os
 import pandas as pd
-
+import subprocess
+from subprocess import call
+import argparse
+import yaml
+# %%
 # path where the soudns are hosted
 # path where you want the csv file saved
-csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-threshold = 0.70
+# csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+# birdnetpath = '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
+# threshold = 0.70
 
+# %% setup your files
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+csvpath = configs['csvpath']
+path = configs['path']
+birdnetpath = configs['birdnetpath']
+threshold = configs['threshold']
+
+# %%
 if os.path.exists(os.path.join(csvpath, "eventlist.csv")):
     os.remove(os.path.join(csvpath, "eventlist.csv"))
 else:
@@ -67,39 +85,13 @@ df = pd.DataFrame(list(zip(sounds, eventglobals, goodlocals)),
                   columns=['Audio_Paths', 'Highest_Event_Probability',
                            'Number_of_Events'])
 
-# %% work in progress - need to correctly parse in data
-# but here is some psuedo code
-# o = path where you want the BirdNET txt files saved
-# i think will need to be in the same folder
-# for i in range (len(df['Audio_Paths']))
-#   i = df['Audio_Paths'][i]
-#   import analyze.py //(from Birdnet)
-#print('Done analyzing audio files.')
-#import sys
-#O = csvpath
-#
-#birdnetpath = '/Users/amandabreton/Documents/GitHub/BirdNET'
-#for i in range (len(df['Audio_Paths'])):
-#    I = df['Audio_Paths'][i]
-#    sys.path.insert(0, birdnetpath)
-#    import analyze
-#print('Done analyzing audio files.')
-
-
 # %%
-import subprocess
-from subprocess import call
-import os
-# %%
-# subprocess.call(['python', 'somescript.py', somescript_arg1, somescript_val1,...])
-birdinput = df['Audio_Paths'][3]
 os.chdir("/Users/amandabreton/Documents/GitHub/BirdNET")
-subprocess.call(['python', '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py', '--i /Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/20190726_033400.WAV'])
 
-# %%
-#from subprocess import Popen, PIPE
+for i in range(len(df['Audio_Paths'])):
+    birdaud = str('python ') + str(birdnetpath) + str(' --i ') + str(df['Audio_Paths'][i])
+    subprocess.call(birdaud, shell=True)
+    print('BirdNET done analyzing  audio file #' + str((df['Audio_Paths'][i])))
 
-#p = Popen(['program', 'arg1'], stdin=PIPE, stdout=PIPE, stderr=PIPE)
-#os.chmod("/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py", 755)
-
-#Popen(['/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py', birdinput], stdin=PIPE, stdout=PIPE, stderr=PIPE)
+print('BirdNET done analyzing ' + str(len(df['Audio_Paths']))
+      + ' audio files')

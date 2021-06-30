@@ -1,0 +1,4 @@
+csvpath: "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+path: '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+birdnetpath: = '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
+threshold: 0.70
