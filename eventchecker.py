@@ -127,3 +127,8 @@ df = pd.DataFrame(list(zip(knbirds, confidences, source)),
 
 print('The most probable bird detections in this batch are as follows:')
 print(df)
+
+# %% graphing things
+df1 = pd.DataFrame(list(zip(knbirds, source)),
+                   columns=['Species', 'Audio Source'])
+df1 = df1.groupby(df1.columns.tolist()).size().to_frame('Count').reset_index()
