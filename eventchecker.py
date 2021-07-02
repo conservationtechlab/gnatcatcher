@@ -15,7 +15,9 @@ from subprocess import call
 import argparse
 import yaml
 import numpy as np
-# %%  yaml file example: 
+import exiftool
+import matplotlib.pyplot as plt
+# %%  yaml file example:
 # csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
 # path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 # analyzepath = '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
@@ -132,3 +134,41 @@ print(df)
 df1 = pd.DataFrame(list(zip(knbirds, source)),
                    columns=['Species', 'Audio Source'])
 df1 = df1.groupby(df1.columns.tolist()).size().to_frame('Count').reset_index()
+
+specieslist = []
+[specieslist.append(x) for x in knbirds if x not in specieslist]
+
+# %%
+print('Here are the species found:')
+print(specieslist)
+print('Which species would you like to investigate further?')
+bird = input()
+# %%
+sources = []
+count = []
+times = []
+comments = []
+
+for i in range(len(df1['Audio Source'])):
+    if bird == str(df1['Species'][i]):
+        audsource = (df1['Audio Source'][i])
+        sources.append(audsource)
+        freq = (df1['Count'][i])
+        count.append(freq)
+        exifpath = str(path) + str(df1['Audio Source'][i])
+        with exiftool.ExifTool() as et:
+            audComment = et.get_tag("comment", exifpath)
+        time = audComment[13:20]
+        comments.append(audComment)
+        times.append(time)
+    else:
+        pass
+
+df2 = pd.DataFrame(list(zip(times, sources, count)),
+                   columns=['Time', 'Audio Source', 'Count'])
+# %%
+df2.plot.bar(x='Time', y='Count', rot=0)
+plt.xlabel("Time")
+plt.ylabel("Count")
+plt.title(bird)
+plt.show()
