@@ -24,8 +24,8 @@ with open(CONFIG_FILE) as f:
 path = configs['path']
 threshold = configs['threshold']
 # %%
-# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
-# threshold = 0.8
+path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
+threshold = 0.8
 # %%
 files = os.listdir(path)  # Get all the files in that directory
 txtfiles = []
@@ -67,12 +67,17 @@ df1 = df1.groupby(df1.columns.tolist()).size().to_frame('Count').reset_index()
 
 specieslist = []
 [specieslist.append(x) for x in knbirds if x not in specieslist]
-
+speciesnum = np.arange(0, len(specieslist))
+df2 = pd.DataFrame(list(zip(specieslist, speciesnum)),
+                   columns=['Species List', 'Index'])
 # %%
 print('Here are the species you can plot:')
-print(specieslist)
+print(df2)
 print('Which species would you like to investigate further?')
-bird = input()
+print('Input the index corresponding to the spcies')
+val = input()
+val = int(val)
+bird = specieslist[val]
 # %%
 sources = []
 count = []
