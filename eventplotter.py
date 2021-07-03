@@ -24,8 +24,8 @@ with open(CONFIG_FILE) as f:
 path = configs['path']
 threshold = configs['threshold']
 # %%
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
-threshold = 0.8
+# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
+# threshold = 0.8
 # %%
 files = os.listdir(path)  # Get all the files in that directory
 txtfiles = []
