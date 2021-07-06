@@ -13,7 +13,7 @@ import exiftool
 import matplotlib.pyplot as plt
 import argparse
 import yaml
-
+import eventplotter_functions as epf
 # %% setup your paths
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -26,52 +26,17 @@ threshold = configs['threshold']
 # %%
 # path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
 # threshold = 0.8
-# %%
-files = os.listdir(path)  # Get all the files in that directory
-txtfiles = []
-for filename in os.listdir(path):
-    if filename.endswith(".txt"):
-        name = os.path.join(path, filename)
-        txtfiles.append(name)
-    else:
-        nonimagecount = +1
-        continue
-# %%
 
-knbirds = []
-source = []
-confidences = []
-for k in range(len(txtfiles)):
-    birdtxt = txtfiles[k]
-    df = pd.read_csv(birdtxt, sep='\t')
-    for i in range(1, len(df)):
-        confid = df['Confidence'][i]
-        confid = float(confid)
-        if confid > threshold:
-            # knbirds.append(confid)
-            bird = df['Common Name'][i]
-            knbirds.append(bird)
-            audio = df['Begin File'][i]
-            source.append(audio)
-            confidences.append(confid)
-        else:
-            pass
+# %% use epf.listtxtfiles to create list of txt files made by BirdNET.
+txtfiles = epf.listtxtfiles(path)
 
-df = pd.DataFrame(list(zip(knbirds, confidences, source)),
-                  columns=['Species', 'Confidence', 'Audio Source'])
+# %% Create dataframe of BirdNET species, confidences and audio sources
+knbirds, confidences, source = epf.df_details(txtfiles, threshold)
 
 # %% setting up stuff to graph
-df1 = pd.DataFrame(list(zip(knbirds, source)),
-                   columns=['Species', 'Audio Source'])
-df1 = df1.groupby(df1.columns.tolist()).size().to_frame('Count').reset_index()
+specieslist, df1, df2 = epf.speciesplotlist(knbirds, source)
 
-specieslist = []
-[specieslist.append(x) for x in knbirds if x not in specieslist]
-speciesnum = np.arange(0, len(specieslist))
-df2 = pd.DataFrame(list(zip(specieslist, speciesnum)),
-                   columns=['Species List', 'Index'])
-
-# %%
+# %%  plotting all the spceise
 print('Here are the species being plotted:')
 print(specieslist)
 
@@ -95,6 +60,7 @@ for k in range(len(specieslist)):
             times.append(time)
         else:
             pass
+    plt.figure()
     df2 = pd.DataFrame(list(zip(times, sources, count)),
                        columns=['Time', 'Audio Source', 'Count'])
     df2.plot.bar(x='Time', y='Count', rot=0)
