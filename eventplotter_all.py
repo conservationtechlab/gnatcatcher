@@ -60,11 +60,10 @@ for k in range(len(specieslist)):
             times.append(time)
         else:
             pass
-    plt.figure()
     df2 = pd.DataFrame(list(zip(times, sources, count)),
                        columns=['Time', 'Audio Source', 'Count'])
     df2.plot.bar(x='Time', y='Count', rot=0)
     plt.xlabel("Time")
     plt.ylabel("Count")
     plt.title(bird)
-    plt.show()
+plt.show()
