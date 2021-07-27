@@ -36,8 +36,8 @@ grtruthcsv = configs['grtruthcsv']
 # testercsv: /Users/amandabreton/Desktop/microfaune.csv
 # grtruthcsv :/Users/amandabreton/Desktop/groundtruth.csv
 
-testercsv = '/Users/amandabreton/Desktop/microfaune.csv'
-grtruthcsv = '/Users/amandabreton/Desktop/groundtruth.csv'
+# testercsv = '/Users/amandabreton/Desktop/microfaune.csv'
+# grtruthcsv = '/Users/amandabreton/Desktop/groundtruth.csv'
 
 testerdf = pd.read_csv(testercsv, header=0)
 grtruthdf = pd.read_csv(grtruthcsv,  header=0)
@@ -70,3 +70,33 @@ print('Average precision-recall score: {0:0.2f}'.format(
 disp = plot_precision_recall_curve(classifier, X, y)
 disp.ax_.set_title('2-class Precision-Recall curve: '
                    'AP={0:0.2f}'.format(average_precision))
+
+
+# %%
+from sklearn.preprocessing import label_binarize
+from sklearn.metrics import roc_curve, auc
+
+#y = label_binarize(y, classes=[0, 1])
+#n_classes = y.shape[1]
+
+# Compute ROC curve and ROC area for each class
+fpr = dict()
+tpr = dict()
+roc_auc = dict()
+
+fpr, tpr, _ = roc_curve(y, y_score)
+roc_auc = auc(fpr, tpr)
+
+plt.figure()
+lw = 2
+plt.plot(fpr, tpr, color='darkorange',
+         lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
+
+plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('ROC Curve (Receiver Operating Characteristic)')
+plt.legend(loc="lower right")
+plt.show()
