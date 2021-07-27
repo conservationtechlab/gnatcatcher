@@ -6,32 +6,67 @@ Created on Mon Jul 19 20:44:11 2021
 @author: amandabreton
 """
 
-import os
 import pandas as pd
 from sklearn.metrics import average_precision_score
 import numpy as np
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import plot_precision_recall_curve
 import matplotlib.pyplot as plt
+from sklearn import svm, datasets
+from sklearn.model_selection import train_test_split
+import numpy as np
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import plot_precision_recall_curve
+import matplotlib.pyplot as plt
+from sklearn.metrics import average_precision_score
+import argparse
+import yaml
+
 # parse in paths to csvs and thresholds
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+testercsv = configs['testercsv']
+grtruthcsv = configs['grtruthcsv']
+
+# example:
+# testercsv: /Users/amandabreton/Desktop/microfaune.csv
+# grtruthcsv :/Users/amandabreton/Desktop/groundtruth.csv
+
 testercsv = '/Users/amandabreton/Desktop/microfaune.csv'
 grtruthcsv = '/Users/amandabreton/Desktop/groundtruth.csv'
-threshold = 0.3
 
 testerdf = pd.read_csv(testercsv, header=0)
 grtruthdf = pd.read_csv(grtruthcsv,  header=0)
 
-# %% firx the brackets on the testerdf
+# %% fix the brackets on the testerdf
 probabilities = []
 for i in range(len(testerdf)):
     prob = testerdf['Probability'][i][1:-1]
     prob = float(prob)
     probabilities.append(prob)
-# %% average precision score using the straight probabilities
-# from microfaune
-y_true = grtruthdf['Marker']
-#y_true = y_true.to_numpy()
-y_scores = probabilities
-#y_scores = y_scores.to_numpy()
-score = average_precision_score(y_true, y_scores)
-print(score)
+
+# %% set up numpy.ndarray for graphing
+y = grtruthdf['Marker']
+y = np.array(y)
+X = probabilities
+X = np.array(probabilities)
+X = X.reshape(-1, 1)
+random_state = np.random.RandomState(0)
+
+# Create a simple classifier
+classifier = svm.LinearSVC(random_state=random_state)
+classifier.fit(X, y)
+y_score = classifier.decision_function(X)
+
+average_precision = average_precision_score(y, y_score)
+
+print('Average precision-recall score: {0:0.2f}'.format(
+      average_precision))
+
+disp = plot_precision_recall_curve(classifier, X, y)
+disp.ax_.set_title('2-class Precision-Recall curve: '
+                   'AP={0:0.2f}'.format(average_precision))
