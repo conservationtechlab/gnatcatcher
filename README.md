@@ -26,8 +26,9 @@ data from field recordings. Files inlcude:
   is shown that shows how the counts of that bird species changes throughout
   the day. 
 * eventplotter_all.py: works in a similar way to eventplotter.py but outputs a
-  graph for every single probable species. The user does not need to tell the
-  script which species they would like to investigate further. 
+  graph for every single probable species above the given threshold *and* found
+  inside the San Diego Zoo BioDiversity Reserve. The user does not need to tell 
+  the script which species they would like to investigate further. 
 * eventplotter_functions.py: hosts the functions used by eventplotter.py and 
   eventplotter_all.py
 * pitchshift.py: a script that pitchshifts a given audio file. Can be used if 
@@ -81,8 +82,13 @@ Project is created with:
       2. Provide a configfile that includes:
         - the path containing the audio files that BirdNET analyzed and saved
           the text files in.
+        - the path to the csv file with the common names of the birds found in 
+          the San Diego Zoo Biodiversity Reserve. The csv file is called:
+          reservebirds.csv
       Example: 
         path: /Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/
+        biodiversity_reserve_bird_list: 
+        /Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv
       Note: you can use the same config file you used to run eventchecker.py
       3. Run the script with the yaml file from the terminal.
       4. The script will prompt you to provide it with the number corresponding 
@@ -92,8 +98,13 @@ Project is created with:
       2. Provide a configfile that includes:
         - the path containing the audio files that BirdNET analyzed and saved
           the text files in.
+        - the path to the csv file with the common names of the birds found in 
+          the San Diego Zoo Biodiversity Reserve. The csv file is called:
+          reservebirds.csv
       Example: 
         path: /Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/
+        biodiversity_reserve_bird_list: 
+        /Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv
       Note: you can use the same config file you used to run eventchecker.py
       3. Run the script with the yaml file from the terminal.
 * pitchshift.py: 
