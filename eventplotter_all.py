@@ -15,19 +15,19 @@ import argparse
 import yaml
 import eventplotter_functions as epf
 # %% setup your paths
-#parser = argparse.ArgumentParser()
-#parser.add_argument('config_filename')
-#args = parser.parse_args()
-#CONFIG_FILE = args.config_filename
-#with open(CONFIG_FILE) as f:
-#    configs = yaml.load(f, Loader=yaml.SafeLoader)
-#path = configs['path']
-#threshold = configs['threshold']
-#biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+path = configs['path']
+threshold = configs['threshold']
+biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
 # %%
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/audiomoth_data/reserve/yucca/'
-threshold = 0.8
-biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
+# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/audiomoth_data/reserve/yucca/'
+# threshold = 0.8
+# biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
 # %% use epf.listtxtfiles to create list of txt files made by BirdNET.
 txtfiles = epf.listtxtfiles(path)
 
@@ -49,14 +49,13 @@ for i in range(len(specieslist)):
 # %%  plotting all the spceise
 print('Here are all the species above the threshold')
 print(specieslist)
-
-
+s
 print('These are the most probable species based on location:')
 print(foundinreserve)
-print('They will be plotted now')
+print('They will be plotted now. If you want to plot the other birds, please use eventplotter.py')
 # %%
-for k in range(len(specieslist)):
-    bird = specieslist[k]
+for k in range(len(foundinreserve)):
+    bird = foundinreserve[k]
     sources = []
     count = []
     times = []
