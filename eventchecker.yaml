@@ -1,5 +1,6 @@
-csvpath: '/Users/amandabreton/Documents/GitHub/gnatcatcher/'
-path: '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-analyzepath: '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
-birdnetpath: '/Users/amandabreton/Documents/GitHub/BirdNET'
+csvpath: /Users/amandabreton/Documents/GitHub/gnatcatcher/
+path: /Users/amandabreton/Documents/GitHub/gnatcatcher/audiomoth_data/reserve/yucca/
+analyzepath: /Users/amandabreton/Documents/GitHub/BirdNET/analyze.py
+birdnetpath: /Users/amandabreton/Documents/GitHub/BirdNET
 threshold: 0.70
+biodiversity_reserve_bird_list: /Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv
