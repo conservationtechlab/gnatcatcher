@@ -16,6 +16,8 @@ from os import walk
 from glob import glob
 import argparse
 import yaml
+import pandas as pd
+import os
 # %% set up paths to mastlist of audio and unknown sample
 # parser = argparse.ArgumentParser()
 # parser.add_argument('config_filename')
@@ -25,10 +27,23 @@ import yaml
 #     configs = yaml.load(f, Loader=yaml.SafeLoader)
 # ccpath = configs['ccpath']
 # unknbird = configs['unknbird']
+
 # %%
 ccpath = '/Users/amandabreton/Documents/GitHub/gnatcatcher/cross_correlation_audio'
 unknbirds = '/Users/amandabreton/Documents/GitHub/gnatcatcher/cross_correlation_audio/UnknownBirds'
 
+# %%  for mac os remove .DS_Store files
+if os.path.exists(os.path.join(ccpath, ".DS_Store")):
+    os.remove(os.path.join(ccpath, ".DS_Store"))
+else:
+    # print("no .DS_Store files")
+    pass
+
+if os.path.exists(os.path.join(unknbirds, ".DS_Store")):
+    os.remove(os.path.join(unknbirds, ".DS_Store"))
+else:
+    # print("no .DS_Store files")
+    pass
 # %% get list of paths to masterlist files and list of names in the masterlist
 file_paths = glob(str(ccpath)+'/*.wav')
 filenames = next(walk(ccpath), (None, None, []))[2]  # [] if no file
@@ -44,36 +59,39 @@ else:
     # print("no .DS_Store files")
     pass
 
-# %% set up strings for dataframe for later
+# %% set up dataframe for later
+times = np.arange(0,60,10)
+#df = pd.DataFrame(index=unbirdsnames, columns=times)
+df_corr = pd.DataFrame()
+df_matches = pd.DataFrame()
+
+# %%
 matches = []
-# %% for loop 
-   # set up the audio you want to analyze
+mostcorrs = []
+confidences = []
 for k in range(len(unbirds_paths)):
     unknbird = unbirds_paths[k]
     sample_rate, samples = wavfile.read(unknbird)
     frequencies, times, spectrogram = signal.spectrogram(samples, sample_rate)
-    x, y = spectrogram.shape
-    timesegs = np.linspace(0, y, num=7)
-    timesegs = np.round(timesegs)
-    timesegs = timesegs.astype(int)
-    for j in range(len(timesegs)-1):
-        segment = spectrogram[:, timesegs[j]:timesegs[j+1]]
-        maxcorrs = []
-    # perform cross correltation
-        for i in range(len(file_paths)):
-            knbird = file_paths[i]
-            knbird_sr, knbird_samples = wavfile.read(knbird)
-            frequencies, times, knspectrogram = signal.spectrogram(knbird_samples, knbird_sr)
-            x, y = knspectrogram.shape
-            start = round(.25*y)
-            end = round(.75*y)
-            knsegment = knspectrogram[:, start:end]
-            #corr = signal.correlate2d(segment, knsegment, boundary='symm', mode='same')
-            corr = signal.correlate(segment, knsegment)
-            maxcorr = np.max(corr)
-            maxcorrs.append(maxcorr)
-            mostcorr = np.where(maxcorrs == np.max(maxcorrs))[0][0]
-            match = filenames[mostcorr]
-        matches.append(match)
+    truth = signal.correlate(spectrogram, spectrogram)
+    maxcorrs = []
+    for i in range(len(file_paths)):
+        knbird = file_paths[i]
+        knbird_sr, knbird_samples = wavfile.read(knbird)
+        frequencies, times, knspectrogram = signal.spectrogram(knbird_samples, knbird_sr)
+        #corr = signal.correlate2d(segment, knspectrogram, boundary='symm', mode='same')
+        corr = signal.correlate(spectrogram, knspectrogram)
+        maxcorr = np.max(corr)
+        maxcorrs.append(maxcorr)
+    mostcorr = np.where(maxcorrs == np.max(maxcorrs))[0][0]
+    match = filenames[mostcorr]
+    confidence = np.max(maxcorrs)/np.max(truth)
+    confidences.append(confidence)
+    matches.append(match)
 
 
+# %%
+df = pd.DataFrame(list(zip(unbirdsnames, matches, confidences)),
+                  columns=['File Name', 'Closest Matched Species',
+                           'Confidence Compared to Autocorrelation'])
+df.to_csv(r'/Users/amandabreton/Desktop/testcc.csv')
