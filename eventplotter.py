@@ -13,7 +13,8 @@ import exiftool
 import matplotlib.pyplot as plt
 import argparse
 import yaml
-
+import eventplotter_functions as epf
+import math
 # %% setup your paths
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -23,56 +24,33 @@ with open(CONFIG_FILE) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 path = configs['path']
 threshold = configs['threshold']
+biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
 # %%
 # path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
 # threshold = 0.8
+# biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
 # %%
-files = os.listdir(path)  # Get all the files in that directory
-txtfiles = []
-for filename in os.listdir(path):
-    if filename.endswith(".txt"):
-        name = os.path.join(path, filename)
-        txtfiles.append(name)
-    else:
-        nonimagecount = +1
-        continue
-# %%
-
-knbirds = []
-source = []
-confidences = []
-for k in range(len(txtfiles)):
-    birdtxt = txtfiles[k]
-    df = pd.read_csv(birdtxt, sep='\t')
-    for i in range(1, len(df)):
-        confid = df['Confidence'][i]
-        confid = float(confid)
-        if confid > threshold:
-            # knbirds.append(confid)
-            bird = df['Common Name'][i]
-            knbirds.append(bird)
-            audio = df['Begin File'][i]
-            source.append(audio)
-            confidences.append(confid)
-        else:
-            pass
-
-df = pd.DataFrame(list(zip(knbirds, confidences, source)),
-                  columns=['Species', 'Confidence', 'Audio Source'])
+# %% use epf.listtxtfiles to create list of txt files made by BirdNET.
+txtfiles = epf.listtxtfiles(path)
+# %% Create dataframe of BirdNET species, confidences and audio sources
+knbirds, confidences, source = epf.df_details(txtfiles, threshold)
 
 # %% setting up stuff to graph
-df1 = pd.DataFrame(list(zip(knbirds, source)),
-                   columns=['Species', 'Audio Source'])
-df1 = df1.groupby(df1.columns.tolist()).size().to_frame('Count').reset_index()
+specieslist, df1, df2 = epf.speciesplotlist(knbirds, source)
 
-specieslist = []
-[specieslist.append(x) for x in knbirds if x not in specieslist]
-speciesnum = np.arange(0, len(specieslist))
-df2 = pd.DataFrame(list(zip(specieslist, speciesnum)),
-                   columns=['Species List', 'Index'])
+BRBLdf = pd.read_csv(biodiversity_reserve_bird_list, header=0)
+reservebirds = BRBLdf['COMMON']
+
+foundinreserve = []
+for i in range(len(specieslist)):
+    bird = specieslist[i]
+    if reservebirds.str.contains(bird).any():
+        foundinreserve.append(bird)
 # %%
 print('Here are the species you can plot:')
 print(df2)
+print('Based on the reserve, here are the most probable birds:')
+print(foundinreserve)
 print('Which species would you like to investigate further?')
 print('Input the index corresponding to the spcies')
 val = input()
@@ -93,17 +71,22 @@ for i in range(len(df1['Audio Source'])):
         exifpath = str(path) + str(df1['Audio Source'][i])
         with exiftool.ExifTool() as et:
             audComment = et.get_tag("Comment", exifpath)
-        time = audComment[13:20]
+        time = audComment[12:17]
         comments.append(audComment)
         times.append(time)
     else:
         pass
 
-df2 = pd.DataFrame(list(zip(times, sources, count)),
+df3 = pd.DataFrame(list(zip(times, sources, count)),
                    columns=['Time', 'Audio Source', 'Count'])
 # %%
-df2.plot.bar(x='Time', y='Count', rot=0)
+
+#%%
+
+df3.plot.bar(x='Time', y='Count', rot=0)
 plt.xlabel("Time")
 plt.ylabel("Count")
 plt.title(bird)
+plt.gca().set_yticks(df3["Count"].unique())
 plt.show()
+
