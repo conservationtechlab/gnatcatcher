@@ -4,6 +4,11 @@
 Created on Fri Jul  2 23:18:49 2021
 
 @author: amandabreton
+Plots and saves the bird vocalizations found by eventplotter.
+Outputs a graph for every single probable species above
+the given threshold and found inside the San Diego Zoo
+BioDiversity Reserve. The user does not need to tell the script
+which species they would like to investigate further.
 """
 # set up modules and paths
 import pandas as pd
@@ -24,7 +29,7 @@ with open(CONFIG_FILE) as f:
 path = configs['path']
 threshold = configs['threshold']
 biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
-# %%
+# %% yaml file example 
 # path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/audiomoth_data/reserve/yucca/'
 # threshold = 0.8
 # biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
@@ -56,7 +61,8 @@ print(specieslist)
 
 print('These are the most probable species based on location:')
 print(foundinreserve)
-print('They will be plotted now. If you want to plot the other birds, please use eventplotter.py')
+print('They will be plotted now.')
+print('If you want to plot the other birds, please use eventplotter.py')
 # %%
 for k in range(len(foundinreserve)):
     bird = foundinreserve[k]
@@ -74,15 +80,16 @@ for k in range(len(foundinreserve)):
             with exiftool.ExifTool() as et:
                 audComment = et.get_tag("Comment", exifpath)
             time = audComment[12:17]
+            date = audComment[20:31]
             comments.append(audComment)
-            times.append(time)
+            times.append(time + date)
         else:
             pass
     df2 = pd.DataFrame(list(zip(times, sources, count)),
                        columns=['Time', 'Audio Source', 'Count'])
     df2.plot.bar(x='Time', y='Count', rot=0)
-    plt.xlabel("Time")
-    plt.ylabel("Count")
+    plt.xlabel("Time and Date")
+    plt.ylabel("Number of Vocalizations")
     plt.title(bird)
     plt.gca().set_yticks(df2["Count"].unique())
     plt.savefig(graphpath + bird)
