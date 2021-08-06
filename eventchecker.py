@@ -4,6 +4,13 @@
 Created on Thu Jun 24 19:25:10 2021
 
 @author: amandabreton
+
+Analyzes set of audio files using microfaune and BirdNET.
+First uses mircofaune to filter audio with events and sends
+those files to be analyzed by BirdNET. For every audio file
+it was sent, BirdNET outputs a text file containing the
+probability of time segments containing a bird species.
+
 """
 
 from microfaune.detection import RNNDetector
@@ -18,9 +25,9 @@ import numpy as np
 import exiftool
 import matplotlib.pyplot as plt
 # %%  yaml file example:
-# csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
-# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-# analyzepath = '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
+# csvpath: "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+# path:'/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+# analyzepath:'/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
 # threshold = 0.70
 
 # %% setup your files
@@ -141,4 +148,5 @@ specieslist = []
 # %%
 print('Here are the species found:')
 print(specieslist)
-print('If you would like to investigate further, please run "eventplotter.py"')
+print('If you would like to investigate further, please run:')
+print('eventplotter.py or eventplotter_all.py')
