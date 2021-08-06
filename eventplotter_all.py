@@ -14,6 +14,9 @@ import matplotlib.pyplot as plt
 import argparse
 import yaml
 import eventplotter_functions as epf
+import matplotlib
+matplotlib.use('TkAgg')
+import matplotlib.pyplot as plt
 # %% setup your paths
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -49,7 +52,7 @@ for i in range(len(specieslist)):
 # %%  plotting all the spceise
 print('Here are all the species above the threshold')
 print(specieslist)
-s
+
 print('These are the most probable species based on location:')
 print(foundinreserve)
 print('They will be plotted now. If you want to plot the other birds, please use eventplotter.py')
@@ -81,4 +84,5 @@ for k in range(len(foundinreserve)):
     plt.ylabel("Count")
     plt.title(bird)
     plt.gca().set_yticks(df2["Count"].unique())
+    plt.savefig(path + bird)
 plt.show()
