@@ -4,13 +4,16 @@
 Created on Wed Jun  2 00:38:59 2021
 
 @author: amandabreton
-"""
-# I keep getting this error:
-# ValueError: File format b'\x00\x00\x00\x01' not understood.
-# Only 'RIFF' and 'RIFX' supported.
-# but if i just keep trying to run it, it's fine
-# it doesn't seem to work when run from the terminal though
 
+picks a random audio file from a given folder and provides:
+the sampling rate, the spectrogram of the entire audio,
+the highest audible frequency, the Fast Fourier Transform of
+Entire Audio, duration of the audio. It also prompts the user
+to input a time frame within the audio and in turn it provides:
+a Spectrogram of the Segmented Time, the most prominent frequency,
+graph of the Strongest Frequency per bin, and a graph of the
+Power of Strongest Frequency per Bin.
+"""
 import scipy.io.wavfile
 import os
 import random
@@ -22,9 +25,9 @@ import yaml
 import wave
 import contextlib
 from scipy.fft import fft, ifft
-# i do need this scipy.fft abs(fft(audData)) uses it
+# need this bc scipy.fft abs(fft(audData)) uses it
 from scipy.io.wavfile import write, read
-# also need this 
+# also need this
 
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -33,10 +36,7 @@ CONFIG_FILE = args.config_filename
 
 with open(CONFIG_FILE) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
-
 path = configs['path']
-# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 
@@ -51,7 +51,7 @@ Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
 cbar = plt.colorbar(im)
 plt.xlabel('Time (s)')
 plt.ylabel('Frequency (Hz)')
-plt.title('Spectrogram of Entire Audio')
+plt.title('Mottled Owl')
 cbar.set_label('Intensity dB')
 
 # Fourier Transform
@@ -152,7 +152,3 @@ plt.xlabel('bin number')
 plt.ylabel('Power')
 plt.title('Power of Strongest Frequency per Bin')
 # need to figure it out per time frame rather than bin
-# the whale sound data is not a great example because it's FFT is so weird
-# it thinks the strongest freqency is
-
-# %%
