@@ -14,9 +14,6 @@ import matplotlib.pyplot as plt
 import argparse
 import yaml
 import eventplotter_functions as epf
-import matplotlib
-matplotlib.use('TkAgg')
-import matplotlib.pyplot as plt
 # %% setup your paths
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
@@ -33,7 +30,11 @@ biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
 # biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
 # %% use epf.listtxtfiles to create list of txt files made by BirdNET.
 txtfiles = epf.listtxtfiles(path)
-
+graphfolder = 'Reserve_Graphs/'
+graphpath = os.path.join(path, graphfolder)
+# os.mkdir(graphpath)
+if not os.path.exists(graphpath):
+    os.makedirs(graphpath)
 # %% Create dataframe of BirdNET species, confidences and audio sources
 knbirds, confidences, source = epf.df_details(txtfiles, threshold)
 
@@ -84,5 +85,5 @@ for k in range(len(foundinreserve)):
     plt.ylabel("Count")
     plt.title(bird)
     plt.gca().set_yticks(df2["Count"].unique())
-    plt.savefig(path + bird)
+    plt.savefig(graphpath + bird)
 plt.show()
