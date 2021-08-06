@@ -4,6 +4,7 @@
 Created on Mon Jul  5 23:19:23 2021
 
 @author: amandabreton
+Functions used by eventchecker.py, eventplotter.py and eventplotter_all.py
 """
 import os
 import pandas as pd
