@@ -1,3 +1,3 @@
-audio:/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV
-datafile:/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet csv Files/5D31ED38.BirdNET.csv
-threshold:0.80
+audio: '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV'
+datafile: '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D31ED38.BirdNET.csv'
+threshold: 0.75
