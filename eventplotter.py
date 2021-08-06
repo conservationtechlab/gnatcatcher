@@ -4,6 +4,14 @@
 Created on Wed Jun 30 20:01:53 2021
 
 @author: amandabreton
+Allows user to pick view a species result from eventchecker.py.
+Takes in the text files created by BirdNET and provides
+the user with a list of the most probable bird species.
+The user then tells the script which speices they would
+like to investigate further and a graph is shown that
+shows how the counts of that bird species changes throughout
+the day.
+
 """
 # set up modules and paths
 import pandas as pd
@@ -25,10 +33,10 @@ with open(CONFIG_FILE) as f:
 path = configs['path']
 threshold = configs['threshold']
 biodiversity_reserve_bird_list = configs['biodiversity_reserve_bird_list']
-# %%
-# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
-# threshold = 0.8
-# biodiversity_reserve_bird_list = '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
+# %% yaml file example
+# path:'/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/'
+# threshold: 0.8
+# biodiversity_reserve_bird_list: '/Users/amandabreton/Documents/GitHub/gnatcatcher/reservebirds.csv'
 # %%
 # %% use epf.listtxtfiles to create list of txt files made by BirdNET.
 txtfiles = epf.listtxtfiles(path)
