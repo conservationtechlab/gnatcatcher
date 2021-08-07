@@ -11,24 +11,24 @@ import wave
 import matplotlib.pyplot as plt
 import numpy as np
 
-#parser = argparse.ArgumentParser()
-#parser.add_argument('config_filename')
-#args = parser.parse_args()
-#CONFIG_FILE = args.config_filename
-#with open(CONFIG_FILE) as f:
-#    configs = yaml.load(f, Loader=yaml.SafeLoader)
-#path = configs['path']
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+# %% parse in paths
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+path = configs['path']
 
 files = os.listdir(path)
 sound = os.path.join(path, random.choice(files))
 filename = sound
 
-# Extract data and sampling rate from file
-data, fs = sf.read(filename, dtype='float32')  
+# %% Extract data and sampling rate from file
+data, fs = sf.read(filename, dtype='float32')
 
 audlength = data.shape[0]/fs
-with contextlib.closing(wave.open(sound,'r')) as f:
+with contextlib.closing(wave.open(sound, 'r')) as f:
     frames = f.getnframes()
     rate = f.getframerate()
     duration = frames / float(rate)
@@ -40,7 +40,7 @@ print('The maximum frequency is ' + str(maxF) + ' Hz')
 
 if min(freqs) == 0.0:
     freqsnew = np.delete(freqs, (0), axis=0)
-    
+
 minF = min(freqsnew)
 print('The minimum frequency is ' + str(minF) + ' Hz')
 #%%
