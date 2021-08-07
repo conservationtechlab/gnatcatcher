@@ -4,6 +4,10 @@
 Created on Fri Jul  9 12:50:06 2021
 
 @author: amandabreton
+
+A python code used to test out Opensoundscape's RIBBIT.
+You don't need to parse anything in, it's supposed to be
+set to the great_plains_toad_dataset provided by Opensoundscape.
 """
 
 # suppress warnings
@@ -21,7 +25,7 @@ from opensoundscape.ribbit import ribbit
 from opensoundscape.helpers import run_command
 
 # 55 set up the audio you want
-audio_path = np.sort(glob('./great_plains_toad_dataset/5D3C4530.WAV'))[0]
+audio_path = np.sort(glob('./great_plains_toad_dataset/'))[0]
 
 # %%
 # create big visuals
