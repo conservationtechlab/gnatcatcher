@@ -4,59 +4,82 @@
 Created on Tue Jun 22 22:53:48 2021
 
 @author: amandabreton
+
+A script used for testing the robustness of microfaune.
+It outputs a csv file containing the results from microfaune.
 """
 
 from microfaune.detection import RNNDetector
-import matplotlib.pyplot as plt
-import numpy as np
-import random
-import os
 import scipy.io.wavfile
-import contextlib
-import wave
+import os
+from os import walk
+import pandas as pd
+import subprocess
+from subprocess import call
+import argparse
+import yaml
+import numpy as np
+import exiftool
+import matplotlib.pyplot as plt
 
-#path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
-#files = os.listdir(path)
-#sound = os.path.join(path, random.choice(files))
-sound = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
+# %%  yaml file example:
+# csvpath:"/Users/amandabreton/Documents/GitHub/gnatcatcher/"
+# path: '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
+# analyzepath: '/Users/amandabreton/Documents/GitHub/BirdNET/analyze.py'
+# threshold: 0.70
 
-detector = RNNDetector()
-global_score, local_score = detector.predict_on_wav(sound)
-fs, audData = scipy.io.wavfile.read(sound)
+# %% setup your files
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+   configs = yaml.load(f, Loader=yaml.SafeLoader)
+csvpath = configs['csvpath']
+path = configs['path']
+analyzepath = configs['analyzepath']
+birdnetpath = configs['birdnetpath']
+threshold = configs['threshold']
 
-with contextlib.closing(wave.open(sound, 'r')) as f:
-    frames = f.getnframes()
-    rate = f.getframerate()
-    duration = frames / float(rate)
+# %% getting which files are audio
+if os.path.exists(os.path.join(csvpath, "eventlist.csv")):
+    os.remove(os.path.join(csvpath, "eventlist.csv"))
+else:
+    # print("no audiocsv.csv file")
+    pass
 
-location = np.where(local_score == np.max(local_score))[0]
-x = ((location*duration)/len(local_score))[0]
-time = np.arange(0, duration, 1/fs)
+nonimagecount = 0
+if os.path.exists(os.path.join(path, ".DS_Store")):
+    os.remove(os.path.join(path, ".DS_Store"))
+else:
+    # print("no .DS_Store files")
+    pass
 
-plt.figure(1)
-Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
-cbar = plt.colorbar(im)
-plt.xlabel('Time (s)')
-plt.ylabel('Frequency (Hz)')
-plt.title('Spectrogram of Entire Audio')
-cbar.set_label('Intensity dB')
-plt.axvspan(np.round(x), x, color='red', alpha=0.5)
+for filename in os.listdir(path):
+    if filename.endswith(".wav"):
+        name = os.path.join(path, filename)
+    else:
+        nonimagecount = +1
+        continue
 
-# %%
-print(global_score)
-print(local_score)
-print(len(local_score))
-print(np.max(local_score))
+sounds = [os.path.join(path, name) for name in os.listdir(path) if
+          os.path.isfile(os.path.join(path, name))]
 
-print(location)
-type(local_score)
-plt.figure(2)
-plt.plot(local_score)
+audnames = next(walk(path), (None, None, []))[2]
+# %% using microfaune to filter audio files wtih events
+eventlist = []
+eventglobals = []
+goodlocals = []
+for i in range(len(sounds)):
+    detector = RNNDetector()
+    sound = sounds[i]
+    global_score, local_score = detector.predict_on_wav(sound)
+    s, audData = scipy.io.wavfile.read(sound)
+    eventlist.append(sound)
+    eventglobals.append(global_score)
 
-# %%
-plt.figure()
-plt.plot(time, audData)
-plt.axvspan(np.round(x), x, color='red', alpha=0.5)
-plt.xlabel('Time (s)')
-plt.ylabel('')
 
+# %% putting the info into a data frame
+df = pd.DataFrame(list(zip(audnames, eventglobals)),
+                  columns=['Audio', 'Probability'])
+df.to_csv('SONGBIRDSmicrofaune.csv')
