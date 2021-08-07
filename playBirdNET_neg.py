@@ -31,9 +31,6 @@ with open(CONFIG_FILE) as f:
     configs = yaml.load(f, Loader=yaml.SafeLoader)
 audio = configs['audio']
 datafile = configs['datafile']
-# threshold = configs['threshold']
-# audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D3C4530.WAV'
-# datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D3C4530.BirdNET.csv'
 
 # %% getting duration
 with contextlib.closing(wave.open(audio, 'r')) as f:
@@ -94,7 +91,6 @@ for i in range(len(timestep)):
     else:
         negs.append(val)
 negs = np.array(negs)
-
 
 # %%
 negsrange = ranges(negs)
