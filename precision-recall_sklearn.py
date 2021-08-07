@@ -4,6 +4,9 @@
 Created on Mon Jul 19 20:44:11 2021
 
 @author: amandabreton
+
+Performs precision recall and ROC on results from microfaune.
+Provides graphs of PR and ROC. Provide two csv files.
 """
 
 import pandas as pd
@@ -22,7 +25,7 @@ from sklearn.metrics import average_precision_score
 import argparse
 import yaml
 
-# parse in paths to csvs and thresholds
+# %% parse in paths to csvs and thresholds
 parser = argparse.ArgumentParser()
 parser.add_argument('config_filename')
 args = parser.parse_args()
@@ -35,9 +38,6 @@ grtruthcsv = configs['grtruthcsv']
 # example:
 # testercsv: /Users/amandabreton/Desktop/microfaune.csv
 # grtruthcsv :/Users/amandabreton/Desktop/groundtruth.csv
-
-# testercsv = '/Users/amandabreton/Desktop/microfaune.csv'
-# grtruthcsv = '/Users/amandabreton/Desktop/groundtruth.csv'
 
 testerdf = pd.read_csv(testercsv, header=0)
 grtruthdf = pd.read_csv(grtruthcsv,  header=0)
