@@ -4,6 +4,9 @@
 Created on Wed Jun  2 14:23:41 2021
 
 @author: amandabreton
+
+Do not use. Was originally an attempt to convert mp3 to wav.
+But mp3TOwav.py works much better.
 """
 import pydub 
 import numpy as np
