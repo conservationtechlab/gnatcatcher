@@ -44,11 +44,25 @@ data from field recordings. Files inlcude:
   audio file that contains the most probable bird sounds in chronological order.
 * playBirdNET_neg.py: uses a BirdNET text file to play the portions of a given
   audio file that contain no bird sounds whatsoever according to BirdNET.
+* cross_correlation.py:Performs 1D cross correlation on a set of files.
+  Compares it to master set of files to try to determine a match.
+* mp3TOwav: Converts mp3 files to wav files.
+* pitchshift.py: Pitch shifts a given audio file.
+* stereoTOmono_microfaune.py: Converts wav files with stereo channels to wav 
+  files that are mono-channeled. 
+* testmicrofaune.py: Tests the robustness of microfaune. 
+* groundtruthcsv.py Creates a csv file for the ground truth data used to test 
+  micorfaune.
 
 ## Technologies
 Project is created with: 
 * Python 3.8.8
 * Spyder 4
+* BirdNET (https://github.com/kahst/BirdNET)
+  - @phdthesis{kahl2019identifying, title={{Identifying Birds by Sound: 
+    Large-scale Acoustic Event Recognition for Avian Activity Monitoring}},
+  author={Kahl, Stefan},year={2019},school={Chemnitz University of Technology}}
+* microfaune (https://github.com/microfaune/microfaune)
 
 ## Setup
 * analyzeaudio.py: 
@@ -129,7 +143,7 @@ Project is created with:
       2. Provide a configfile that includes:
         - the path to the audio file you want to listen to. 
         - the path to the text file created by BirdNET from the audio file. 
-        - the threshold of probabilty you want. 
+        - the threshold of probabilty you want.
 Example: 
 audio: '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV'
 datafile: '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/
@@ -148,3 +162,16 @@ threshold: 0.75
         - the path to the audio file you want to listen to. 
         - the path to the text file created by BirdNET from the audio file. 
       Note: you can use the same config file taht was used in checkBirdNET.py
+* cross_correlation.py: 
+  Just need to parse in the: path to the masterlist of files and path to the 
+  files you want analyzed. 
+* mp3TOwav.py: Just need to parse in the: path to the folder of mp3s you want 
+  converted and and path to the folder you want the .wav files to be saved to. 
+* pitchshift.py: Just need to parse in the audio file you want to pitch shift.
+* stereoTOmono_microfaune.py: Just need to parse in the: path to the folder of 
+  stereo wav file you want converted and and path to the folder you want the 
+  mono wav files to be saved to.
+* testmicrofaune.py: Need to parse in the folder where the audio files are and 
+  parse in where you want the csv of results saved.
+* groundtruthcsv.py: Need to parse in a folder containing the non-bird sounds
+  and parse in a file containing the bird sounds. 
