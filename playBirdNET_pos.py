@@ -38,9 +38,6 @@ audio = configs['audio']
 datafile = configs['datafile']
 threshold = configs['threshold']
 
-# audio = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds/5D31ED38.WAV'
-# datafile = '/Users/amandabreton/Documents/GitHub/gnatcatcher/BirdNet_csv_files/5D31ED38.BirdNET.csv'
-
 # %% sorting the vlaues - doesn't seem to be working
 df = pd.read_csv(
     datafile, header=None)
