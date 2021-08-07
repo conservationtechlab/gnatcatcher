@@ -5,31 +5,39 @@ Created on Tue Jun  1 16:21:27 2021
 
 @author: amandabreton
 """
-#import utilities
-import os 
-#from os import path
-from pydub import AudioSegment
+# import required modules
+import subprocess
+from os import walk
 from glob import glob
+import os
+import argparse
+import yaml
+# %% parse in paths
+parser = argparse.ArgumentParser()
+parser.add_argument('config_filename')
+args = parser.parse_args()
+CONFIG_FILE = args.config_filename
+with open(CONFIG_FILE) as f:
+    configs = yaml.load(f, Loader=yaml.SafeLoader)
+mp3path = configs['mp3path']
+wavpath = configs['wavpath']
 
-# set up paths
+# %% remove DS store file (mac issue)
+if os.path.exists(os.path.join(mp3path, ".DS_Store")):
+    os.remove(os.path.join(mp3path, ".DS_Store"))
+else:
+    # print("no .DS_Store files")
+    pass
+
+# %% get file lists
+
 file_list = glob('/Users/amandabreton/Documents/GitHub/gnatcatcher/mp3s/*.mp3')
-path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/mp3s'
-
-for i in range(len(file_list)):
-    name = file_list[i]
-    sound = AudioSegment.from_mp3(name)
-    sound.export(name, format= "wav")
-
+mp3files = next(walk(mp3path), (None, None, []))[2]  # [] if no file
 
 # %%
-#name = name of file you want to convert
-name = 'XC564909 - Cactus Wren - Campylorhynchus brunneicapillus.mp3'
-# dst = name you want for the .wav file 
-dst = "cactuswren1.wav"
-
-
-src  = os.path.join(path, name)
-
-# convert wav to mp3                                                            
-sound = AudioSegment.from_mp3(src)
-sound.export(dst, format="wav")
+os.chdir(wavpath)
+for i in range(len(mp3files)):
+    soundname = mp3files[i][:-4]
+    mp3 = file_list[i]
+    subprocess.call(['ffmpeg', '-i', mp3,
+                     str(soundname) + '.wav'])
