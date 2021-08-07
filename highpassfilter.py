@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+"""
+Do not use this. It doesn't work all that well.'
+
+"""
 from scipy.signal import butter, lfilter
 import random 
 import os 
