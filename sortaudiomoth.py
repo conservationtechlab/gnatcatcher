@@ -43,14 +43,10 @@ with open(CONFIG_FILE) as f:
 path = configs['path']
 csvpath = configs['csvpath']
 
-# csvpath = "/Users/amandabreton/Documents/GitHub/gnatcatcher/"
-# path = '/Users/amandabreton/Documents/GitHub/gnatcatcher/sounds'
 files = os.listdir(path)
-sound = os.path.join(path, random.choice(files))
 
 # %%
 # extracting data in a simpler but longer way
-
 
 if os.path.exists(os.path.join(csvpath, "audiocsv.csv")):
     os.remove(os.path.join(csvpath, "audiocsv.csv"))
@@ -98,27 +94,27 @@ for k in range(length):
     frames = file.getnframes()
     framenums.append(frames)
     fs, audData = scipy.io.wavfile.read(sample)
-    Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
+    #Pxx, freqs, bins, im = plt.specgram(audData, Fs=fs, NFFT=1024)
     with contextlib.closing(wave.open(sample, 'r')) as f:
         frames = f.getnframes()
         rate = f.getframerate()
         duration = frames / float(rate)
     durationarray.append(duration)
-    row, col = np.where(Pxx == np.max(Pxx))
-    intensF = freqs[row][0]
-    if intensF == 0.0:
-        Pxxnew = np.delete(Pxx, (0), axis=0)
-        freqsnew = np.delete(freqs, (0), axis=0)
-        row, col = np.where(Pxx == np.max(Pxx))
-        intensF = freqsnew[row][0]
-    IFarray.append(intensF)
-    dec = math.log(np.max(Pxx))
+    #row, col = np.where(Pxx == np.max(Pxx))
+    #intensF = freqs[row][0]
+    #if intensF == 0.0:
+    #    Pxxnew = np.delete(Pxx, (0), axis=0)
+    #    freqsnew = np.delete(freqs, (0), axis=0)
+    #    row, col = np.where(Pxx == np.max(Pxx))
+    #   intensF = freqsnew[row][0]
+    #IFarray.append(intensF)
+    #dec = math.log(np.max(Pxx))
     # double check the math for calculating decibels
-    loudness.append(dec)
-    x = ((col*duration)/len(bins))[0]
-    loudtime.append(x)
-    avgL = math.log(np.mean(Pxx))
-    avgloudness.append(avgL)
+    #loudness.append(dec)
+    #x = ((col*duration)/len(bins))[0]
+    #loudtime.append(x)
+    #avgL = math.log(np.mean(Pxx))
+    #avgloudness.append(avgL)
     with exiftool.ExifTool() as et:
         audComment = et.get_tag("comment", sample)
     comments.append(audComment)
